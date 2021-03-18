@@ -1,0 +1,18 @@
+
+[
+    {
+        "site" : "知乎日报",
+        "link" : "https://www.zhihu.com/rss",
+        "type" : "rss"
+    },
+    {
+        "site" : "OSCHINA社区",
+        "link" : "https://www.oschina.net/blog/rss",
+        "type" : "rss"
+    },
+    {
+        "site" : "喷嚏网",
+        "link" : "http://www.dapenti.com/blog/rss2.asp",
+        "type" : "rss"
+    }
+]

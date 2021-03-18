@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"feedReader/search"
 	"log"
-	"os"
+	"net/http"
 )
 
 // 定义rss结构体
@@ -56,18 +56,21 @@ type (
 
 type rssMatcher struct{}
 
-func (r rssMatcher) Search() ([]*search.Result, error) {
-	// 获取文件
-	file, err := os.Open("data/example.xml")
+func (r rssMatcher) Search(link string) ([]*search.Result, error) {
+	// 请求地址
+	resp, err := http.Get(link)
 	if err != nil {
-		log.Fatalln("file not find")
+		log.Fatalf("http get error %s", err.Error())
 	}
 
-	defer file.Close()
+	if resp.StatusCode != 200 {
+		log.Printf("link %s code %d", link, resp.StatusCode)
+		return nil, nil
+	}
 
 	// 解析到结构体中
 	var rss rssDocument
-	xml.NewDecoder(file).Decode(&rss)
+	xml.NewDecoder(resp.Body).Decode(&rss)
 
 	var results []*search.Result
 

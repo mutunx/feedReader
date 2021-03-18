@@ -6,6 +6,5 @@ import (
 )
 
 func main() {
-	search.Run("rss")
-	search.Run("sdfsdf")
+	search.Run()
 }

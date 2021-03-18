@@ -2,7 +2,7 @@ package search
 
 type DefaultMatcher struct{}
 
-func (m DefaultMatcher) Search() ([]*Result, error) {
+func (m DefaultMatcher) Search(link string) ([]*Result, error) {
 	return nil, nil
 }
 

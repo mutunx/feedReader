@@ -7,5 +7,5 @@ type Result struct {
 }
 
 type Matcher interface {
-	Search() ([]*Result, error)
+	Search(link string) ([]*Result, error)
 }
