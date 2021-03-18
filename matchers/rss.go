@@ -56,7 +56,7 @@ type (
 
 type rssMatcher struct{}
 
-func (r rssMatcher) Search() {
+func (r rssMatcher) Search() ([]*search.Result, error) {
 	// 获取文件
 	file, err := os.Open("data/example.xml")
 	if err != nil {
@@ -69,10 +69,19 @@ func (r rssMatcher) Search() {
 	var rss rssDocument
 	xml.NewDecoder(file).Decode(&rss)
 
-	log.Println("title", rss.Channel.Title)
-	log.Println("Description", rss.Channel.Description)
-	log.Println("Title", rss.Channel.Item[0].Title)
-	log.Println("Description", rss.Channel.Item[0].Description)
+	var results []*search.Result
+
+	for _, item := range rss.Channel.Item {
+
+		results = append(results, &search.Result{
+			Title:       item.Title,
+			Description: item.Description,
+			Link:        item.Link,
+		})
+
+	}
+
+	return results, err
 
 }
 

@@ -1,11 +1,9 @@
 package search
 
-import "fmt"
-
 type DefaultMatcher struct{}
 
-func (m DefaultMatcher) Search() {
-	fmt.Print("this is default matcher\n")
+func (m DefaultMatcher) Search() ([]*Result, error) {
+	return nil, nil
 }
 
 func init() {

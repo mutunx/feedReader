@@ -1,6 +1,9 @@
 package search
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 // 解析器列表
 var matchers = make(map[string]Matcher)
@@ -26,6 +29,18 @@ func Run(t string) {
 		matcher = matchers[t]
 	}
 
-	matcher.Search()
+	// 获取结果
+	results, err := matcher.Search()
+	if err != nil {
+		fmt.Errorf("get result error %s", err)
+	}
+	// 展示结果
+	Display(results)
+}
 
+func Display(results []*Result) {
+	for _, item := range results {
+		log.Println(item.Title)
+		log.Println(item.Link)
+	}
 }
