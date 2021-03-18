@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	_ "feedReader/matchers"
+	"feedReader/search"
+)
 
 func main() {
-	fmt.Print("hello world")
+	search.Run("rss")
+	search.Run("sdfsdf")
 }
