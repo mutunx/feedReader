@@ -5,6 +5,7 @@ import (
 	"feedReader/search"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 // 定义rss结构体
@@ -56,7 +57,7 @@ type (
 
 type rssMatcher struct{}
 
-func (r rssMatcher) Search(link string) ([]*search.Result, error) {
+func (r rssMatcher) Search(link string, searchItem string) ([]*search.Result, error) {
 	// 请求地址
 	resp, err := http.Get(link)
 	if err != nil {
@@ -75,12 +76,19 @@ func (r rssMatcher) Search(link string) ([]*search.Result, error) {
 	var results []*search.Result
 
 	for _, item := range rss.Channel.Item {
+		// 搜索
+		matched, err := regexp.MatchString(searchItem, item.Title)
+		if err != nil {
+			return nil, err
+		}
 
-		results = append(results, &search.Result{
-			Title:       item.Title,
-			Description: item.Description,
-			Link:        item.Link,
-		})
+		if matched {
+			results = append(results, &search.Result{
+				Title:       item.Title,
+				Description: item.Description,
+				Link:        item.Link,
+			})
+		}
 
 	}
 

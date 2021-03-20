@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	search.Run()
+	search.Run("为什么")
 }

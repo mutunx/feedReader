@@ -21,7 +21,7 @@ func Register(matcherName string, matcher Matcher) {
 
 }
 
-func Run() {
+func Run(searchItem string) {
 	// 获取源文件中的订阅源
 	feeds, err := GetFeeds()
 	if err != nil {
@@ -46,7 +46,7 @@ func Run() {
 		}
 
 		go func(feed *Feed, matcher Matcher, results chan *Result) {
-			Match(feed, matcher, results)
+			Match(feed, matcher, results, searchItem)
 			waitGroup.Done()
 		}(feed, matcher, results)
 	}
