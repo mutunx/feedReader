@@ -1,5 +1,7 @@
 package search
 
+import "log"
+
 type Result struct {
 	Title       string
 	Description string
@@ -8,4 +10,20 @@ type Result struct {
 
 type Matcher interface {
 	Search(link string) ([]*Result, error)
+}
+
+// 获取源和源对应的方法
+func Match(feed *Feed, matcher Matcher, results chan *Result) {
+	// 获取结果
+	result, err := matcher.Search(feed.Link)
+	if err != nil {
+		log.Fatalf("get result error %s", err.Error())
+	}
+	log.Printf("get %d's info", len(result))
+
+	// 读取一条后就展示一条
+	for _, item := range result {
+		results <- item
+	}
+
 }
