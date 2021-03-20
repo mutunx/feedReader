@@ -2,7 +2,6 @@ package search
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 )
 
@@ -17,8 +16,10 @@ const path = "data/source.json"
 func GetFeeds() ([]*Feed, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		log.Fatalf("file open error %s", err.Error())
+		return nil, err
 	}
+
+	defer file.Close()
 
 	var feeds []*Feed
 	err = json.NewDecoder(file).Decode(&feeds)

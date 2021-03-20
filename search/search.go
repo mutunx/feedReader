@@ -1,23 +1,22 @@
 package search
 
 import (
-	"fmt"
 	"log"
 	"sync"
 )
 
-// 解析器列表
+// 解析器列表 用于解析器的获取和注册
 var matchers = make(map[string]Matcher)
 
-// 放置解析器
+// 解析器注册
 func Register(matcherName string, matcher Matcher) {
-	// 存在则提示
+	// 解析器如果已注册则报错
 	if _, exist := matchers[matcherName]; exist {
-		fmt.Print("match exist")
-	} else {
-		// 存入
-		matchers[matcherName] = matcher
+		log.Fatalf("mathers is already register")
 	}
+	// 注册
+	log.Println("register ", matcherName, "Mather")
+	matchers[matcherName] = matcher
 
 }
 
@@ -38,17 +37,15 @@ func Run(searchItem string) {
 		log.Printf("get feed %s url %s", feed.Site, feed.Link)
 
 		// 判断类型是否存在 不存在则用默认的
-		var matcher Matcher
-		if _, exist := matchers[feed.Type]; !exist {
+		matcher, exist := matchers[feed.Type]
+		if !exist {
 			matcher = matchers["default"]
-		} else {
-			matcher = matchers[feed.Type]
 		}
 
-		go func(feed *Feed, matcher Matcher, results chan *Result) {
+		go func(feed *Feed, matcher Matcher) {
 			Match(feed, matcher, results, searchItem)
 			waitGroup.Done()
-		}(feed, matcher, results)
+		}(feed, matcher)
 	}
 	// go range 遍历channel时 如果channel关闭就会自动退出
 	go func() {
@@ -59,11 +56,4 @@ func Run(searchItem string) {
 	// 展示结果
 	Display(results)
 
-}
-
-func Display(results chan *Result) {
-	for item := range results {
-		log.Println(item.Title)
-		log.Println(item.Link)
-	}
 }

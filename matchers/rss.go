@@ -2,7 +2,9 @@ package matchers
 
 import (
 	"encoding/xml"
+	"errors"
 	"feedReader/search"
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -57,21 +59,11 @@ type (
 
 type rssMatcher struct{}
 
-func (r rssMatcher) Search(link string, searchItem string) ([]*search.Result, error) {
-	// 请求地址
-	resp, err := http.Get(link)
+func (r rssMatcher) Search(feed *search.Feed, searchItem string) ([]*search.Result, error) {
+	rss, err := retrieve(feed)
 	if err != nil {
-		log.Fatalf("http get error %s", err.Error())
+		return nil, err
 	}
-
-	if resp.StatusCode != 200 {
-		log.Printf("link %s code %d", link, resp.StatusCode)
-		return nil, nil
-	}
-
-	// 解析到结构体中
-	var rss rssDocument
-	xml.NewDecoder(resp.Body).Decode(&rss)
 
 	var results []*search.Result
 
@@ -99,4 +91,29 @@ func (r rssMatcher) Search(link string, searchItem string) ([]*search.Result, er
 func init() {
 	var r rssMatcher
 	search.Register("rss", r)
+}
+
+// 请求链接过去xml文本
+func retrieve(feed *search.Feed) (*rssDocument, error) {
+	// 防止地址为空
+	if feed.Link == "" {
+		return nil, errors.New("link is empty")
+	}
+
+	resp, err := http.Get(feed.Link)
+	if err != nil {
+		log.Fatalf("http get error %s", err.Error())
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("link %s code %d", feed.Link, resp.StatusCode)
+	}
+
+	// 解析到结构体中
+	var rss rssDocument
+	xml.NewDecoder(resp.Body).Decode(&rss)
+
+	return &rss, err
 }
